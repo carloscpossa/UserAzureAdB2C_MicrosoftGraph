@@ -48,7 +48,7 @@ var user = new User
     PasswordProfile = new PasswordProfile
     {
         ForceChangePasswordNextSignIn = false,
-        Password = "@Chcp9883"
+        Password = "senha"
     },
     Mail = "usuarionovo@gmail.com",
     PreferredLanguage = "PT-BR",
