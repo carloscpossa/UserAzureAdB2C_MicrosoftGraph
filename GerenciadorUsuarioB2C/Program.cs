@@ -2,6 +2,7 @@
 using Azure.Identity;
 using Microsoft.Graph;
 using Microsoft.Extensions.Configuration;
+using Azure.Core;
 
 using IHost host = Host.CreateDefaultBuilder(args).Build();
 
@@ -16,6 +17,10 @@ var dadosAzureB2C = config.GetSection("azureadb2c");
 var tenantId = dadosAzureB2C.GetSection("tenantId").Value;
 var clientId = dadosAzureB2C.GetSection("clientId").Value;
 var clientSecret = dadosAzureB2C.GetSection("clientSecret").Value;
+
+// esse é id do APP padrão do B2C que armazena os usuários. Necessário para armazenar atributos customizados
+var idAppArmazenamentoUsuarios = dadosAzureB2C.GetSection("idAppUserData").Value;
+
 
 var options = new TokenCredentialOptions
 {
@@ -48,18 +53,25 @@ var user = new User
     PasswordProfile = new PasswordProfile
     {
         ForceChangePasswordNextSignIn = false,
-        Password = "senha"
+        Password = "!Senha125469"
     },
     Mail = "usuarionovo@gmail.com",
     PreferredLanguage = "PT-BR",
     UserType = "Guest",
-    CompanyName = "Minha Empresa"
+    CompanyName = "Minha Empresa",
 };
+
+//Atributo customizado de nome "CNPJ"
+IDictionary<string, object> extensionInstance = new Dictionary<string, object>
+{
+    { $"extension_{idAppArmazenamentoUsuarios.Replace("-", "")}_CNPJ", "testecnpj" }
+};
+user.AdditionalData = extensionInstance;
+
 
 var usuario = await graphClient.Users
     .Request()
     .AddAsync(user);
-
 
 Console.WriteLine($"Usuário criado com sucesso! Id: {usuario.Id}");
 Console.ReadKey();
